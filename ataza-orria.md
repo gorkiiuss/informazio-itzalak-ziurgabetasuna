@@ -13,3 +13,29 @@ Esperimenturik errazena funtzio lineala eta erregresio lineala erabiltzea da. Et
 Informazio itzalak, ala "Information Shadows", lehen azaldu den bezala, haien artean zerikusia duten datu multzoak dira. Bi dimentsioko funtzio matematikoetan behintzat, azalera jarrai eta txiki baten gainean aurki daitezken puntu multzoa dira. Argi dago beraz, planoaren zati txiki eta itxi bat definitzen duen funtzio batek informazio kontzeptu bat definituko duela. Dena dela, lehenengo esperimentua ez zailtzeko asmoz, azalera multzo murriztu bat erabiliko da, etorkizun batean definitutako sistema dinamikoarekin bateragarria eginez. Momentuz, X zein Y ardatzen tarteekin, laukizuzenekin eta borobilekin egingo da lan.
 
 "Information-gap loss calculator"-ak idatzitako emaitzak modulo batean kalkulatuko ditu eta beste batean haien bistaraketa sortuko da herrminta desberdinak erabiliz.
+
+**TODO**: sare neuronalak!, Radial Basis Function -> "bataz bestekoa" atera eta "erregrezio lineal" ez lineala... hutsuneekin zer gertatzen da?
+
+**TODO**:
+
+Hurrengo urratsak:
+
+Zihurgabetasun neurria ondo ematen duen. Itzal bat tokatzen denean? Sare neuronal bat entrenatzen denean normalean irteeran 10 klase baditu.
+
+Bayesian Neural Network with Dropout - 100 inferentzia egin, batazbestekoa inferentzia eta bariantza dugu ezegonkortasun marka. Agian bi geruzaro jarri, entreinatzeko erraz izateko? Konbergitu dezala, loss hori jaitzi overfittinga gainditzeko!
+
+Bagging, esemble regressor classifiers. Intzerdidumbre neurria lortzeko (KNN, SVM..., Random Forestarekin).
+
+Explorazioa bukatu eta experimentuak mugatu:
+
+1. Random Forest - Azpitik egiten duen baggina lortu
+2. Poly 2 - Ensemble Bagging
+3. NN + Dropout (Lehentasuna!!!)
+4. Bayesian Neural Network.
+    - BBB with TensorFlow
+    - PBP
+
+Irudikatzeko
+
+Gardentasuna distribuzio normala?
+2 grafikak: bataz bestekoa eta desbideraketa.
