@@ -1,3 +1,5 @@
+# src/noise.py
+
 from typing import override
 import numpy as np
 from abc import ABC, abstractmethod

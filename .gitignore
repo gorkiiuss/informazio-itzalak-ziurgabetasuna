@@ -1,10 +1,31 @@
+# Python & Virtual Environments
 .venv/
 venv/
 env/
-pycache/
+__pycache__/
 *.py[cod]
 *$py.class
-.ipynb_checkpoints
-/.ipynb_checkpoints/
+
+# Jupyter Checkpoints
+.ipynb_checkpoints/
+*/.ipynb_checkpoints/
+
+# OS / Logs
 .DS_Store
 *.log
+texput.log
+
+# Datuak eta Memoria
+data/
+memoria/
+*.pdf
+
+# Kanpoko biltegia eta probako script-ak
+karaktereen_web_aplikazioa_github/
+test_shadow.py
+
+# 3.1.4 Web aplikazioa: datuak eta eredu astunak baztertu (kodea soilik igo)
+src/3.1.4_karaktereen_web_aplikazioa/data/
+src/3.1.4_karaktereen_web_aplikazioa/models/
+src/3.1.4_karaktereen_web_aplikazioa/debug_output/
+

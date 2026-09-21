@@ -1,0 +1,273 @@
+<!DOCTYPE html>
+<html lang="eu">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Ensemble MNIST & Ziurgabetasun Interpretatzailea</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@500;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+
+<body>
+    <div class="app-shell">
+        <!-- Top Navigation Bar -->
+        <header class="top-nav">
+            <div class="brand">
+                <div class="brand-icon">⚡</div>
+                <div>
+                    <h1 class="brand-title">Ziurgabetasun Laborategia</h1>
+                    <span class="brand-subtitle">Ensemble Probabilistikoa eta OOD Detektatzailea</span>
+                </div>
+            </div>
+
+            <div class="nav-actions">
+                <div class="model-status-pill" id="activeModelBadge">
+                    <span class="status-dot"></span>
+                    <span id="activeModelText">Kargatzen...</span>
+                </div>
+                <button id="toggleTreeBtn" class="nav-btn">
+                    <span>🌳</span> Ereduen Zuhaitza
+                </button>
+                <button id="resetTreeNavBtn" class="nav-btn btn-reset">
+                    <span>🔄</span> Zerotik Hasi
+                </button>
+            </div>
+        </header>
+
+        <!-- Main Content Dashboard -->
+        <main class="dashboard-grid">
+            <!-- Left Column: Drawing Workspace -->
+            <section class="card canvas-card">
+                <div class="card-header">
+                    <h2>Marrazketa Tailerra</h2>
+                    <p>Marraztu zifra bat edo ikur bat canvas-ean inferentzia neurtzeko.</p>
+                </div>
+
+                <div class="canvas-wrapper">
+                    <canvas id="paintCanvas" width="280" height="280"></canvas>
+                    <div class="canvas-grid-overlay"></div>
+                </div>
+
+                <!-- Drawing Toolbar -->
+                <div class="toolbar">
+                    <div class="tool-group">
+                        <label class="tool-label">Traza:</label>
+                        <button class="stroke-btn active" data-size="14">14px</button>
+                        <button class="stroke-btn" data-size="20">20px</button>
+                        <button class="stroke-btn" data-size="26">26px</button>
+                    </div>
+
+                    <div class="tool-group">
+                        <button id="eraserBtn" class="tool-toggle-btn">
+                            <span class="tool-icon">✏️</span> <span id="eraserText">Luma</span>
+                        </button>
+                    </div>
+                </div>
+
+                <div class="card-actions">
+                    <button id="clearBtn" class="btn btn-secondary">Garbitu Canvas</button>
+                    <button id="predictBtn" class="btn btn-primary">
+                        <span>Iragarri eta Neurtu</span>
+                        <span class="btn-glow"></span>
+                    </button>
+                </div>
+            </section>
+
+            <!-- Right Column: Inference & Intelligence Output -->
+            <section class="card analytics-card">
+                <div class="card-header">
+                    <h2>Inferentzia eta Ziurgabetasuna</h2>
+                    <p>Sare Neuronalaren eta Random Forest-en emaitza analitikoak.</p>
+                </div>
+
+                <!-- Empty State Placeholder -->
+                <div id="emptyState" class="empty-state">
+                    <div class="empty-icon">🎨</div>
+                    <p>Marraztu karaktere bat ezkerreko canvas-ean eta sakatu <strong>Iragarri</strong> emaitzak ikusteko.</p>
+                </div>
+
+                <!-- Active Result Container -->
+                <div id="resultBox" class="result-container hidden">
+                    <!-- Top Summary: Big Prediction & Badges -->
+                    <div class="prediction-header">
+                        <div class="predicted-symbol-wrapper">
+                            <span class="symbol-label">Iragarpen Nagusia</span>
+                            <div id="predictionText" class="predicted-symbol">--</div>
+                        </div>
+
+                        <div class="prediction-meta">
+                            <div class="metric-pill">
+                                <span class="metric-name">Probabilitate Giena</span>
+                                <span class="metric-val" id="confidenceBadge">--%</span>
+                            </div>
+                            <div class="metric-pill">
+                                <span class="metric-name">Shannon Entropia</span>
+                                <span class="metric-val" id="entropyBadge">--</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Entropy Gauge Section -->
+                    <div class="analytics-block">
+                        <div class="block-title">
+                            <span>Entropia Neurgailua (Ziurgabetasuna)</span>
+                            <span id="entropyStatusLabel" class="status-badge green">Ikusgaiko Datu Zerbitzatua</span>
+                        </div>
+                        <div class="gauge-container">
+                            <div class="gauge-bar-bg">
+                                <div id="entropyGaugeFill" class="gauge-bar-fill"></div>
+                                <div id="entropyThresholdMarker" class="gauge-threshold-line" title="Interpretatzailearen Muga"></div>
+                            </div>
+                            <div class="gauge-labels">
+                                <span>0.0 (Ziurra)</span>
+                                <span id="thresholdValText">Muga: 1.25</span>
+                                <span>2.30 (Ezjakina)</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Class Probabilities Bar Chart -->
+                    <div class="analytics-block">
+                        <div class="block-title">
+                            <span>Klaseen Probabilitate-Banaketa (0-9)</span>
+                        </div>
+                        <div id="probsBarChart" class="bars-chart-grid">
+                            <!-- JS dynamic render -->
+                        </div>
+                    </div>
+
+                    <!-- OOD Warning Banner -->
+                    <div id="warningBox" class="warning-card hidden">
+                        <div class="warning-header">
+                            <span class="warning-icon">⚠️</span>
+                            <div>
+                                <h4>Informazio-Itzala Detektatu Da (OOD)!</h4>
+                                <p>Interpretatzailearen arabera, irudi hau ez dago ikusgaiko klaseetan. Ereduak ez daki zer den.</p>
+                            </div>
+                        </div>
+                        <button id="teachSystemBtn" class="btn btn-warning">
+                            ➕ Sisteman Karaktere Berri Gisa Sartu
+                        </button>
+                    </div>
+                </div>
+            </section>
+        </main>
+    </div>
+
+    <!-- Modal 1: Continual Learning Workflow -->
+    <div id="learningOverlay" class="modal-overlay hidden">
+        <div class="modal-card">
+            <div class="modal-header">
+                <h3>Karaktere Berria Irakasten</h3>
+                <button id="cancelLearningBtn" class="modal-close-btn">&times;</button>
+            </div>
+
+            <div class="modal-body">
+                <!-- Step 1: Label Input -->
+                <div id="labelInputGroup">
+                    <p class="modal-desc">Zehaztu marrazten ari zaren karakterearen etiketa edo izena (adibidez: <em>A, Euro, Beharra</em>).</p>
+                    <div class="form-group">
+                        <label for="charLabel">Karakterearen Izena:</label>
+                        <input type="text" id="charLabel" placeholder="Adibidez: A" autocomplete="off">
+                    </div>
+                    <button id="startLearningBtn" class="btn btn-primary btn-full">Hasi Marrazten</button>
+                </div>
+
+                <!-- Step 2: Multi-Sample Drawing Workshop -->
+                <div id="drawingGroup" class="hidden">
+                    <p id="drawingPrompt" class="modal-desc">Margotu ezazu karaktere berria. Ereduak lagin bariatuak behar ditu.</p>
+                    
+                    <div class="learn-canvas-layout">
+                        <div class="canvas-wrapper compact">
+                            <canvas id="learnCanvas" width="220" height="220"></canvas>
+                        </div>
+                        
+                        <div class="drawn-samples-panel">
+                            <div class="samples-header">
+                                <span>Bildutako Laginak:</span>
+                                <span id="drawingProgress" class="progress-pill">0 / 10</span>
+                            </div>
+                            <div id="drawnThumbnails" class="thumbnails-grid">
+                                <!-- JS dynamic thumbnails -->
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="modal-actions">
+                        <button id="clearLearnBtn" class="btn btn-secondary">Garbitu Canvas</button>
+                        <button id="saveDrawingBtn" class="btn btn-primary">
+                            <span>Gorde Lagin Hau</span>
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Step 3: Retraining Loader -->
+                <div id="learningStatus" class="learning-loader hidden">
+                    <div class="spinner"></div>
+                    <h4>Eredua Berriro Entrenatzen...</h4>
+                    <p>Ensemble eredua (Random Forest + MC Dropout) berrantolatzen ari da bertsio berri batean.</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal 2: Success Summary -->
+    <div id="summaryOverlay" class="modal-overlay hidden">
+        <div class="modal-card compact text-center">
+            <div class="success-icon">🎉</div>
+            <h3>Ikasketa Arrakastatsua!</h3>
+            <p>Ereduak karaktere berria bereganatu du bere gaitasunen arbolan.</p>
+            
+            <div class="summary-badges">
+                <div class="summary-pill">
+                    <span class="pill-label">Azken Entropia:</span>
+                    <span id="finalEntropyBadge" class="pill-val">--</span>
+                </div>
+                <div class="summary-pill">
+                    <span class="pill-label">Bertsio Berria:</span>
+                    <span id="finalStatusBadge" class="pill-val">--</span>
+                </div>
+            </div>
+
+            <button id="finishLearningBtn" class="btn btn-primary btn-full">Orri Nagusira Bueltatu</button>
+        </div>
+    </div>
+
+    <!-- Modal 3: Model Lineage Tree & History -->
+    <div id="treeOverlay" class="modal-overlay hidden">
+        <div class="modal-card wide">
+            <div class="modal-header">
+                <div>
+                    <h3>🌳 Ereduen Bertsio-Zuhaitza eta Historiala</h3>
+                    <p class="modal-desc">Continual Learning bidez sortutako ereduen arbola-genealogia.</p>
+                </div>
+                <button id="closeTreeBtn" class="modal-close-btn">&times;</button>
+            </div>
+
+            <div class="modal-body tree-layout-grid">
+                <!-- Tree Left Column -->
+                <div class="tree-section">
+                    <h4>Genealogia Arbola</h4>
+                    <div id="treeContainer" class="tree-nodes-wrapper">
+                        <!-- JS dynamic tree -->
+                    </div>
+                </div>
+
+                <!-- History Right Column -->
+                <div class="history-section">
+                    <h4>Azken Inferentziak</h4>
+                    <div id="historyContainer" class="history-list-wrapper">
+                        <!-- JS dynamic history -->
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="{{ url_for('static', filename='app.js') }}"></script>
+</body>
+
+</html>

@@ -14,10 +14,6 @@ Informazio itzalak, ala "Information Shadows", lehen azaldu den bezala, haien ar
 
 "Information-gap loss calculator"-ak idatzitako emaitzak modulo batean kalkulatuko ditu eta beste batean haien bistaraketa sortuko da herrminta desberdinak erabiliz.
 
-**TODO**: sare neuronalak!, Radial Basis Function -> "bataz bestekoa" atera eta "erregrezio lineal" ez lineala... hutsuneekin zer gertatzen da?
-
-**TODO**:
-
 Hurrengo urratsak:
 
 Zihurgabetasun neurria ondo ematen duen. Itzal bat tokatzen denean? Sare neuronal bat entrenatzen denean normalean irteeran 10 klase baditu.
@@ -28,7 +24,7 @@ Bagging, esemble regressor classifiers. Intzerdidumbre neurria lortzeko (KNN, SV
 
 Explorazioa bukatu eta experimentuak mugatu:
 
-1. Random Forest - Azpitik egiten duen baggina lortu
+1. Random Forest - Azpitik egiten duen baggina lortu -> 1h 45min RandomForest + Azpiko infraestruktura
 2. Poly 2 - Ensemble Bagging
 3. NN + Dropout (Lehentasuna!!!)
 4. Bayesian Neural Network.
@@ -39,3 +35,17 @@ Irudikatzeko
 
 Gardentasuna distribuzio normala?
 2 grafikak: bataz bestekoa eta desbideraketa.
+
+**26/02/20**:
+ - Orain dropout handiagoarekin saiatu.
+ - Bayesian Neural Networkekin hasi.
+ - 
+
+**2026/03/13**:
+Azkenengo zutabea erabili gabe (klaserik gabe). Clusterrak egin, beste clusterretatik hurbilen dagoena kendu ziurgabetasuna kalkulatzeko. Aurreprozesaketa modura, dimentsio askotako itzala sortzeko prozedura gisa. K-Means, k hiperparametro bezala, optimizatu al silhouette index erabili? elbow method!
+
+One-hot encoder ala balio nominalak baztertu?
+
+Weka-ren 4pa bost datubaserekin frogak egin.
+
+VSCode Latex - texlive-base, texlive-fonts-recommended, texlive-spanish, texlive-france, pdflatex
